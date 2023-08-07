@@ -10,9 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,7 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
 import com.example.spinningwheel.core.presentation.theme.SPACE_8
 import com.example.spinningwheel.presentation.screens.spinningwheel.components.SpinningWheel
-import com.example.spinningwheel.presentation.screens.spinningwheel.components.SpinningWheelEntryScreen
 import com.example.spinningwheel.presentation.screens.spinningwheel.components.SpinningWheelResultDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,13 +27,7 @@ fun SpinningWheelScreen(
 ) {
     val spinningWheelState by viewModel.spinningWheelState.collectAsStateWithLifecycle()
 
-/*    val items = remember {
-        mutableStateListOf(
-            spinningWheelState.items
-        )
-    }*/
-
-    val coroutineScope = rememberCoroutineScope()
+    // val coroutineScope = rememberCoroutineScope()
     val bottomSheetState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
@@ -47,6 +37,9 @@ fun SpinningWheelScreen(
                 wheelItems = spinningWheelState.items,
                 onUpdateEntry = { entry, operation ->
                     viewModel.onEvent(SpinningWheelEvent.UpdateItems(entry, operation))
+                },
+                onEntryTextChanged = {
+                    viewModel.onEvent(SpinningWheelEvent.EnteredEntryText(it))
                 }
             )
         },
@@ -57,7 +50,6 @@ fun SpinningWheelScreen(
             SpinningWheelScreenContent(
                 paddingValues = paddingValues,
                 state = spinningWheelState,
-                //items = items,
                 onWheelClick = { viewModel.onEvent(SpinningWheelEvent.ClickedWheel) },
                 onSpinningFinish = { viewModel.onEvent(SpinningWheelEvent.OnSpinningFinish(it)) },
                 onDismiss = { viewModel.onEvent(SpinningWheelEvent.DismissDialog) }
@@ -70,7 +62,6 @@ fun SpinningWheelScreen(
 fun SpinningWheelScreenContent(
     paddingValues: PaddingValues,
     state: SpinningWheelState,
-    //items: List<String>,
     onWheelClick: () -> Unit,
     onSpinningFinish: (String?) -> Unit,
     onDismiss: () -> Unit

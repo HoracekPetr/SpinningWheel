@@ -104,21 +104,12 @@ fun BoxScope.SpinningWheelContent(
         label = "",
         finishedListener = {
             if (isSpinning) {
-                val angle = abs(it)
-                println("Angle = $angle")
-                println("Sweep angle = $sweepAngleSize")
-
-                val roundsMade = floor(abs(angle) / 360f)
-                println("Rounds made = $roundsMade")
-
-                val remainingAngle = angle - (roundsMade * 360f)
-                println("Remaining angle = $remainingAngle")
-
-                val divisionIndex =
-                    floor((remainingAngle / sweepAngleSize) % wheelDivisions)
-                println("Division = $divisionIndex")
-
-                onAnimationFinish(items.getOrNull(divisionIndex.toInt()))
+                val divisionIndex = getDivisionIndex(
+                    endRotationValue = it,
+                    sweepAngleSize = sweepAngleSize,
+                    wheelDivisions = wheelDivisions
+                )
+                onAnimationFinish(items.getOrNull(divisionIndex))
 
                 lastAnglePosition = it
             }
@@ -242,4 +233,15 @@ fun rememberSpinningWheelColors(wheelDivisions: Int) = remember(wheelDivisions) 
             )
         }
     )
+}
+
+private fun getDivisionIndex(
+    endRotationValue: Float,
+    sweepAngleSize: Float,
+    wheelDivisions: Int
+): Int {
+    val angle = abs(endRotationValue)
+    val roundsMade = floor(abs(angle) / 360f)
+    val remainingAngle = angle - (roundsMade * 360f)
+    return floor((remainingAngle / sweepAngleSize) % wheelDivisions).toInt()
 }

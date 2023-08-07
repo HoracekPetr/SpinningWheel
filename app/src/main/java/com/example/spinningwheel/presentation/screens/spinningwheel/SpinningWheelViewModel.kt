@@ -43,11 +43,14 @@ class SpinningWheelViewModel : ViewModel() {
                     entry = event.entry,
                     entryOperation = event.operation
                 )
-/*                _spinningWheelState.updateState {
+            }
+
+            is SpinningWheelEvent.EnteredEntryText -> {
+                _spinningWheelState.updateState {
                     copy(
-                        items = listOf("petr", "betr", "setr", "getr")
+                        newEntry = event.entryText
                     )
-                }*/
+                }
             }
         }
     }
@@ -65,14 +68,18 @@ class SpinningWheelViewModel : ViewModel() {
             this.addAll(oldList)
         }
 
+        if(entryOperation == EntryOperation.ADD){
+            _spinningWheelState.updateState {
+                copy(
+                    newEntry = null
+                )
+            }
+        }
+
         _spinningWheelState.updateState {
             copy(
                 items = newList
             )
         }
-    }
-
-    private fun mockUpdateList(){
-
     }
 }

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SpinningWheel</string>
+    <string name="dialog_result_name">Result is %1$s</string>
+    <string name="dialog_result_ok">OK</string>
+    <string name="add_your_entries">Add your entries</string>
+    <string name="entries_left">"Add at least 2 entries, entries left: %1$s"</string>
+</resources>

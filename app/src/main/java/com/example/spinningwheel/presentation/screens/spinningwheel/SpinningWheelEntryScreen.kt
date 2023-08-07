@@ -45,7 +45,6 @@ fun SpinningWheelEntryScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(SPACE_16), horizontalAlignment = Alignment.Start
     ) {
         Text(

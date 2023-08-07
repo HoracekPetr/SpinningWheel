@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
 import com.example.spinningwheel.core.presentation.theme.SPACE_8
+import com.example.spinningwheel.core.util.Constants.SHEET_PEAK_HEIGHT
 import com.example.spinningwheel.presentation.screens.spinningwheel.components.SpinningWheel
 import com.example.spinningwheel.presentation.screens.spinningwheel.components.SpinningWheelResultDialog
 
@@ -27,7 +29,6 @@ fun SpinningWheelScreen(
 ) {
     val spinningWheelState by viewModel.spinningWheelState.collectAsStateWithLifecycle()
 
-    // val coroutineScope = rememberCoroutineScope()
     val bottomSheetState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
@@ -43,8 +44,7 @@ fun SpinningWheelScreen(
                 }
             )
         },
-        sheetSwipeEnabled = true,
-        sheetPeekHeight = 200.dp,
+        sheetPeekHeight = SHEET_PEAK_HEIGHT,
         sheetShape = RoundedCornerShape(topStart = SPACE_16, topEnd = SPACE_16),
         content = { paddingValues ->
             SpinningWheelScreenContent(

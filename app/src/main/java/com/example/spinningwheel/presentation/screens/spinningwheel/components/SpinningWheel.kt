@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.spinningwheel.R
+import com.example.spinningwheel.core.presentation.util.drawArrowPath
 import com.example.spinningwheel.core.util.Constants
 import com.example.spinningwheel.core.util.Constants.MIN_WHEEL_ENTRIES
 import com.example.spinningwheel.core.util.toRad
@@ -70,10 +73,16 @@ fun SpinningWheel(
                 modifier = Modifier
                     .size(wheelBoxSize)
             ) {
-                drawCircle(color = Color.Gray)
+                drawCircle(color = Color.LightGray)
             }
 
-            Text(text = stringResource(R.string.entries_left, MIN_WHEEL_ENTRIES - items.size))
+            Text(
+                text = stringResource(
+                    R.string.entries_remaining,
+                    MIN_WHEEL_ENTRIES - items.size
+                ),
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }
@@ -119,6 +128,7 @@ fun BoxScope.SpinningWheelContent(
     Box(
         modifier = Modifier
             .size(wheelBoxSize)
+            .clip(CircleShape)
             .graphicsLayer {
                 rotationZ = if (!isSpinning) {
                     lastAnglePosition
@@ -213,11 +223,14 @@ fun BoxScope.SpinningWheelContent(
 
     Canvas(
         modifier = Modifier
-            .size(20.dp)
+            .size(30.dp)
             .align(Alignment.CenterEnd)
     )
     {
-        drawRoundRect(Color.Red)
+        drawPath(
+            path = drawArrowPath(this.size),
+            color = Color.Red
+        )
     }
 }
 

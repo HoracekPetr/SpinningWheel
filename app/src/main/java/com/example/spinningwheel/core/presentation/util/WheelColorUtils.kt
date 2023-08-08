@@ -15,12 +15,28 @@ fun getWheelColors(scheme: WheelColorScheme, wheelDivisions: Int): List<Color> {
     val schemeListSize = scheme.colorList.size
     return buildList {
         var index = 0
+        var action = ColorSchemeAction.PLUS
         repeat(wheelDivisions) {
+            when{
+                (index == schemeListSize - 1) && action == ColorSchemeAction.PLUS -> {
+                    action = ColorSchemeAction.MINUS
+                }
+                index == 0 && action == ColorSchemeAction.MINUS -> {
+                    action = ColorSchemeAction.PLUS
+                }
+            }
             if (index >= schemeListSize) {
                 index = 0
             }
             add(scheme.colorList.getOrNull(index) ?: Color.White)
-            index++
+            when(action){
+                ColorSchemeAction.PLUS -> index++
+                ColorSchemeAction.MINUS -> index--
+            }
         }
     }
+}
+
+enum class ColorSchemeAction {
+    PLUS, MINUS
 }

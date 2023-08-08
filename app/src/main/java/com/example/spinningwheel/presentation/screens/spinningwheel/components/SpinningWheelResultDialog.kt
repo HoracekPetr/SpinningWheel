@@ -9,11 +9,18 @@ import com.example.spinningwheel.R
 
 @Composable
 fun SpinningWheelResultDialog(
+    title: String,
     result: String?,
     onDismiss: () -> Unit
 ) {
+    val resultTitle = if (title.isNotEmpty()) "$title: ${result.orEmpty()}" else
+        stringResource(
+            R.string.dialog_result_name,
+            result.orEmpty()
+        )
+
     AlertDialog(
-        title = { Text(text = stringResource(R.string.dialog_result_name, result.orEmpty())) },
+        title = { Text(text = resultTitle) },
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {

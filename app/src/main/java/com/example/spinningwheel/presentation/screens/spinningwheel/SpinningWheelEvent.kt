@@ -7,6 +7,7 @@ sealed interface SpinningWheelEvent {
     object ClickedWheel : SpinningWheelEvent
     object DismissDialog : SpinningWheelEvent
 
+    data class EnteredTitle(val title: String): SpinningWheelEvent
     data class EnteredEntryText(val entryText: String?) : SpinningWheelEvent
     data class ChangedFontSize(val fontSize: Float): SpinningWheelEvent
     data class ChangedColorScheme(val colorScheme: WheelColorScheme): SpinningWheelEvent

@@ -7,4 +7,6 @@
     <string name="settings_font_size">Wheel font size: %1$s</string>
     <string name="entries_remaining">Add at least 2 entries, entries remaining: %1$s</string>
     <string name="settings_scheme">Select color scheme</string>
+    <string name="show_entries">Show entries</string>
+    <string name="title_placeholder">Add a title...</string>
 </resources>

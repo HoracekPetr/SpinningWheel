@@ -1,11 +1,11 @@
 package com.example.spinningwheel.presentation.screens.settings
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,19 +23,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.spinningwheel.R
 import com.example.spinningwheel.core.presentation.components.VerticalSpacer
 import com.example.spinningwheel.core.presentation.theme.Pink40
-import com.example.spinningwheel.core.presentation.theme.Pink80
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
+import com.example.spinningwheel.core.presentation.theme.SPACE_2
 import com.example.spinningwheel.core.presentation.theme.SPACE_28
 import com.example.spinningwheel.core.presentation.theme.SPACE_4
+import com.example.spinningwheel.core.presentation.theme.SPACE_6
 import com.example.spinningwheel.core.presentation.util.WheelColorScheme
-import com.example.spinningwheel.core.util.Constants.INNER_SCHEME_ICON_SIZE
-import com.example.spinningwheel.core.util.Constants.OUTER_SCHEME_ICON_SIZE
+import com.example.spinningwheel.core.util.Constants.SCHEME_ICON_SIZE
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelEvent
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelViewModel
 import kotlin.math.floor
@@ -124,9 +123,12 @@ fun ColorSchemeItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (selected) Modifier.selectionBorder() else Modifier
+            )
             .clip(RoundedCornerShape(SPACE_4))
             .clickable { onSchemeChange(scheme) }
-            .padding(SPACE_4),
+            .padding(SPACE_6),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -135,20 +137,21 @@ fun ColorSchemeItem(
             style = MaterialTheme.typography.labelMedium
         )
 
-        Box(modifier = Modifier.size(INNER_SCHEME_ICON_SIZE)) {
-            Canvas(modifier = Modifier.size(INNER_SCHEME_ICON_SIZE)) {
+        Box(modifier = Modifier.size(SCHEME_ICON_SIZE)) {
+            Canvas(modifier = Modifier.size(SCHEME_ICON_SIZE)) {
                 drawCircle(
                     brush = Brush.verticalGradient(colors = scheme.colorList)
                 )
             }
-            if (selected) {
-                Canvas(modifier = Modifier.size(OUTER_SCHEME_ICON_SIZE)) {
-                    drawCircle(
-                        style = Stroke(width = SPACE_4.toPx()),
-                        color = Pink40
-                    )
-                }
-            }
         }
     }
 }
+
+@Composable
+private fun Modifier.selectionBorder() = this.then(
+    Modifier.border(
+        SPACE_2,
+        Pink40,
+        RoundedCornerShape(SPACE_4)
+    )
+)

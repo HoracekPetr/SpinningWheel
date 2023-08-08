@@ -68,6 +68,14 @@ class SpinningWheelViewModel : ViewModel() {
                     )
                 }
             }
+
+            is SpinningWheelEvent.EnteredTitle -> {
+                _spinningWheelState.updateState {
+                    copy(
+                        wheelTitle = event.title.trim()
+                    )
+                }
+            }
         }
     }
 

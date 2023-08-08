@@ -3,6 +3,7 @@ package com.example.spinningwheel.presentation.screens.spinningwheel
 import com.example.spinningwheel.core.presentation.util.WheelColorScheme
 
 data class SpinningWheelState(
+    val wheelTitle: String = "",
     val items: List<String> = listOf(),
     val wheelFontSize: Float = 16f,
     val wheelColorScheme: WheelColorScheme = WheelColorScheme.Classic,

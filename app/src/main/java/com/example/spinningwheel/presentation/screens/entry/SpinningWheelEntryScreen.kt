@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.spinningwheel.R
@@ -41,6 +44,7 @@ fun SpinningWheelEntryScreen(
     viewModel: SpinningWheelViewModel,
     wheelItems: List<String>,
     onEntryTextChanged: (String) -> Unit,
+    onDone: () -> Unit,
     onUpdateEntry: (String, EntryOperation) -> Unit
 ) {
     val spinningWheelState by viewModel.spinningWheelState.collectAsStateWithLifecycle()
@@ -49,7 +53,8 @@ fun SpinningWheelEntryScreen(
         state = spinningWheelState,
         wheelItems = wheelItems,
         onEntryTextChanged = onEntryTextChanged,
-        onUpdateEntry = onUpdateEntry
+        onUpdateEntry = onUpdateEntry,
+        onDone = onDone
     )
 }
 
@@ -58,6 +63,7 @@ fun SpinningWheelEntryContent(
     state: SpinningWheelState,
     wheelItems: List<String>,
     onEntryTextChanged: (String) -> Unit,
+    onDone: () -> Unit,
     onUpdateEntry: (String, EntryOperation) -> Unit
 ) {
     Column(
@@ -71,27 +77,28 @@ fun SpinningWheelEntryContent(
 
         VerticalSpacer()
 
-        if (wheelItems.isNotEmpty()) {
-            LazyColumn {
-                items(items = wheelItems) {
-                    SpinningWheelEntry(
-                        entry = it,
-                        entryOperation = EntryOperation.REMOVE,
-                        onActionClick = onUpdateEntry
-                    )
-                }
+        LazyColumn {
+            items(items = wheelItems) {
+                SpinningWheelEntry(
+                    entry = it,
+                    entryOperation = EntryOperation.REMOVE,
+                    onActionClick = onUpdateEntry
+                )
+            }
+            item {
+                SpinningWheelEntry(
+                    entry = state.newEntry,
+                    onActionClick = { text, entryOp ->
+                        onUpdateEntry(text, entryOp)
+                    },
+                    onTextChange = onEntryTextChanged,
+                    onDone = onDone,
+                    icon = Icons.Default.AddCircle,
+                    entryOperation = EntryOperation.ADD,
+                    iconTint = PositiveGreen
+                )
             }
         }
-        SpinningWheelEntry(
-            entry = state.newEntry,
-            onActionClick = { text, entryOp ->
-                onUpdateEntry(text, entryOp)
-            },
-            onTextChange = onEntryTextChanged,
-            icon = Icons.Default.AddCircle,
-            entryOperation = EntryOperation.ADD,
-            iconTint = PositiveGreen
-        )
     }
 }
 
@@ -102,6 +109,7 @@ fun SpinningWheelEntry(
     iconTint: Color = NegativeRed,
     entryOperation: EntryOperation,
     onTextChange: ((String) -> Unit)? = null,
+    onDone: (() -> Unit)? = null,
     onActionClick: (String, EntryOperation) -> Unit
 ) {
     Row(
@@ -121,7 +129,16 @@ fun SpinningWheelEntry(
                     if (onTextChange != null) {
                         onTextChange(it)
                     }
-                })
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (onDone != null) {
+                            onDone()
+                        }
+                    }
+                )
+            )
 
             EntryOperation.REMOVE -> Text(
                 text = entry.orEmpty(),
@@ -148,7 +165,8 @@ fun SpinningWheelEntryScreenPreview() {
         wheelItems = listOf("test", "test 2", "test 3"),
         state = SpinningWheelState(),
         onUpdateEntry = { _, _ -> },
-        onEntryTextChanged = {}
+        onEntryTextChanged = {},
+        onDone = {}
     )
 }
 

@@ -58,6 +58,7 @@ import kotlin.random.Random
 
 @Composable
 fun SpinningWheel(
+    modifier: Modifier = Modifier,
     wheelBoxSize: Dp = 400.dp,
     fontSize: Float,
     colorScheme: WheelColorScheme,
@@ -67,7 +68,7 @@ fun SpinningWheel(
     onAnimationFinish: (String?) -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {

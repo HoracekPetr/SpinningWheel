@@ -29,5 +29,5 @@ val FUNKY_WHEEL_COLORS = listOf(
 )
 
 val CZECH_WHEEL_COLORS = listOf(
-    DeepRed, MediumBlue, Color.White, Color.Blue
+    DeepRed, MediumBlue, Color.White, MediumBlue
 )

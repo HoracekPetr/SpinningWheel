@@ -52,6 +52,22 @@ class SpinningWheelViewModel : ViewModel() {
                     )
                 }
             }
+
+            is SpinningWheelEvent.ChangedFontSize -> {
+                _spinningWheelState.updateState {
+                    copy(
+                        wheelFontSize = event.fontSize
+                    )
+                }
+            }
+
+            is SpinningWheelEvent.ChangedColorScheme -> {
+                _spinningWheelState.updateState {
+                    copy(
+                        wheelColorScheme = event.colorScheme
+                    )
+                }
+            }
         }
     }
 

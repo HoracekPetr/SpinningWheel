@@ -17,61 +17,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelScreen
 import com.example.spinningwheel.core.presentation.theme.SpinningWheelTheme
+import com.example.spinningwheel.presentation.util.navigation.Navigation
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             SpinningWheelTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SpinningWheelScreen()
-/*                    Box(Modifier.fillMaxSize()) {
-                        Canvas(
-                            modifier = Modifier
-                                .size(50.dp)
-                        )
-                        {
-                            drawPath(
-                                path = Path().apply {
-                                    moveTo(x = 0f, y = this@Canvas.size.height / 2)
-                                    lineTo(x = this@Canvas.size.width / 2, y = 0f)
-                                    lineTo(x = this@Canvas.size.width / 2, y = this@Canvas.size.height)
-                                    close()
-                                },
-                                color = Color.Red
-                            )
-                            drawRoundRect(Color.Red)
-                        }
-                    }*/
+                    Navigation(navController = navController)
                 }
             }
         }
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SpinningWheelTheme {
-        Greeting("Android")
-    }
-}
-
-val items = listOf(
-    "Petr", "Markéta", "Lukáš", "Martin", "Kristýna"
-)

@@ -24,8 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -34,10 +35,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.spinningwheel.R
+import com.example.spinningwheel.core.presentation.theme.SPACE_2
+import com.example.spinningwheel.core.presentation.theme.SPACE_4
+import com.example.spinningwheel.core.presentation.theme.SPACE_6
+import com.example.spinningwheel.core.presentation.util.WheelColorScheme
 import com.example.spinningwheel.core.presentation.util.drawArrowPath
+import com.example.spinningwheel.core.presentation.util.getWheelColors
 import com.example.spinningwheel.core.util.Constants
 import com.example.spinningwheel.core.util.Constants.MIN_WHEEL_ENTRIES
 import com.example.spinningwheel.core.util.toRad
@@ -51,6 +59,8 @@ import kotlin.random.Random
 @Composable
 fun SpinningWheel(
     wheelBoxSize: Dp = 400.dp,
+    fontSize: Float,
+    colorScheme: WheelColorScheme,
     items: List<String>,
     isSpinning: Boolean,
     onWheelClick: () -> Unit,
@@ -64,6 +74,8 @@ fun SpinningWheel(
         if (items.size >= MIN_WHEEL_ENTRIES) {
             SpinningWheelContent(
                 items = items,
+                fontSize = fontSize,
+                colorScheme = colorScheme,
                 isSpinning = isSpinning,
                 onWheelClick = onWheelClick,
                 onAnimationFinish = onAnimationFinish
@@ -90,6 +102,8 @@ fun SpinningWheel(
 @Composable
 fun BoxScope.SpinningWheelContent(
     wheelBoxSize: Dp = 400.dp,
+    fontSize: Float,
+    colorScheme: WheelColorScheme,
     items: List<String>,
     isSpinning: Boolean,
     onWheelClick: () -> Unit,
@@ -125,10 +139,30 @@ fun BoxScope.SpinningWheelContent(
         }
     )
 
+    Canvas(
+        modifier = Modifier
+            .size(wheelBoxSize)
+            .offset(y = SPACE_6)
+            .graphicsLayer {
+                rotationZ = if (!isSpinning) {
+                    lastAnglePosition
+                } else spinTheWheelRotation
+            }
+    ) {
+        drawCircle(
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    Color.DarkGray.copy(alpha = 0.4f),
+                    Color.LightGray.copy(alpha = 0.4f)
+                )
+            ),
+            center = Offset(x = (wheelBoxSize / 2).toPx(), y = (wheelBoxSize / 2).toPx())
+        )
+    }
+
     Box(
         modifier = Modifier
             .size(wheelBoxSize)
-            .clip(CircleShape)
             .graphicsLayer {
                 rotationZ = if (!isSpinning) {
                     lastAnglePosition
@@ -137,7 +171,9 @@ fun BoxScope.SpinningWheelContent(
         contentAlignment = Alignment.Center
     ) {
 
-        val spinningWheelColors by rememberSpinningWheelColors(wheelDivisions = wheelDivisions)
+        val wheelColors by remember(wheelDivisions) {
+            mutableStateOf(getWheelColors(colorScheme, wheelDivisions))
+        }
 
         var wheelSize by remember {
             mutableStateOf(Size.Zero)
@@ -170,7 +206,8 @@ fun BoxScope.SpinningWheelContent(
         {
             repeat(wheelDivisions) {
                 drawArc(
-                    color = spinningWheelColors.getOrNull(it) ?: Color.Black,
+                    color = wheelColors.getOrNull(it)
+                        ?: Color.White,
                     startAngle = it * sweepAngleSize,
                     sweepAngle = sweepAngleSize,
                     useCenter = true,
@@ -184,7 +221,7 @@ fun BoxScope.SpinningWheelContent(
                     color = Color.Black,
                     start = Offset(sizeWidth, sizeHeight),
                     end = Offset(x, y),
-                    strokeWidth = 4f
+                    strokeWidth = if (it == 0) 4f else 2f
                 )
             }
         }
@@ -214,9 +251,21 @@ fun BoxScope.SpinningWheelContent(
                 text = items.getOrNull(it).orEmpty(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                fontSize = TextUnit(value = fontSize, TextUnitType.Sp),
                 style = TextStyle(
                     fontWeight = FontWeight.SemiBold
                 )
+            )
+        }
+
+        Canvas(
+            modifier = Modifier
+                .size(wheelBoxSize)
+        ) {
+            drawCircle(
+                style = Stroke(width = 1f),
+                color = Color.Black,
+                center = Offset(x = sizeWidth, y = sizeHeight)
             )
         }
     }
@@ -229,23 +278,14 @@ fun BoxScope.SpinningWheelContent(
     {
         drawPath(
             path = drawArrowPath(this.size),
+            style = Stroke(width = SPACE_4.toPx()),
+            color = Color.Black
+        )
+        drawPath(
+            path = drawArrowPath(this.size),
             color = Color.Red
         )
     }
-}
-
-@Composable
-fun rememberSpinningWheelColors(wheelDivisions: Int) = remember(wheelDivisions) {
-    mutableStateOf(
-        List(wheelDivisions) {
-            Color(
-                Random.nextInt(50, 255),
-                Random.nextInt(50, 255),
-                Random.nextInt(50, 255),
-                alpha = 0x80
-            )
-        }
-    )
 }
 
 private fun getDivisionIndex(

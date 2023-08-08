@@ -1,9 +1,8 @@
-package com.example.spinningwheel.presentation.screens.spinningwheel
+package com.example.spinningwheel.presentation.screens.entry
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,17 +32,34 @@ import com.example.spinningwheel.core.presentation.theme.NegativeRed
 import com.example.spinningwheel.core.presentation.theme.PositiveGreen
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
 import com.example.spinningwheel.core.presentation.theme.SPACE_8
+import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelState
+import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelViewModel
 import com.example.spinningwheel.presentation.screens.spinningwheel.util.EntryOperation
 
 @Composable
 fun SpinningWheelEntryScreen(
-    viewModel: SpinningWheelViewModel = viewModel(),
+    viewModel: SpinningWheelViewModel,
     wheelItems: List<String>,
     onEntryTextChanged: (String) -> Unit,
     onUpdateEntry: (String, EntryOperation) -> Unit
 ) {
     val spinningWheelState by viewModel.spinningWheelState.collectAsStateWithLifecycle()
 
+    SpinningWheelEntryContent(
+        state = spinningWheelState,
+        wheelItems = wheelItems,
+        onEntryTextChanged = onEntryTextChanged,
+        onUpdateEntry = onUpdateEntry
+    )
+}
+
+@Composable
+fun SpinningWheelEntryContent(
+    state: SpinningWheelState,
+    wheelItems: List<String>,
+    onEntryTextChanged: (String) -> Unit,
+    onUpdateEntry: (String, EntryOperation) -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(SPACE_16), horizontalAlignment = Alignment.Start
@@ -66,7 +83,7 @@ fun SpinningWheelEntryScreen(
             }
         }
         SpinningWheelEntry(
-            entry = spinningWheelState.newEntry,
+            entry = state.newEntry,
             onActionClick = { text, entryOp ->
                 onUpdateEntry(text, entryOp)
             },
@@ -96,6 +113,9 @@ fun SpinningWheelEntry(
     ) {
         when (entryOperation) {
             EntryOperation.ADD -> OutlinedTextField(
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White
+                ),
                 value = entry.orEmpty(),
                 onValueChange = {
                     if (onTextChange != null) {
@@ -124,7 +144,9 @@ fun SpinningWheelEntry(
 @Preview(showBackground = true)
 @Composable
 fun SpinningWheelEntryScreenPreview() {
-    SpinningWheelEntryScreen(wheelItems = listOf("test", "test 2", "test 3"),
+    SpinningWheelEntryContent(
+        wheelItems = listOf("test", "test 2", "test 3"),
+        state = SpinningWheelState(),
         onUpdateEntry = { _, _ -> },
         onEntryTextChanged = {}
     )

@@ -1,14 +1,19 @@
 package com.example.spinningwheel.presentation.screens.entry
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.DoNotDisturbOn
@@ -34,6 +39,7 @@ import com.example.spinningwheel.core.presentation.components.VerticalSpacer
 import com.example.spinningwheel.core.presentation.theme.NegativeRed
 import com.example.spinningwheel.core.presentation.theme.PositiveGreen
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
+import com.example.spinningwheel.core.presentation.theme.SPACE_32
 import com.example.spinningwheel.core.presentation.theme.SPACE_8
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelState
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelViewModel
@@ -45,7 +51,7 @@ fun SpinningWheelEntryScreen(
     wheelItems: List<String>,
     onEntryTextChanged: (String) -> Unit,
     onDone: () -> Unit,
-    onUpdateEntry: (String, EntryOperation) -> Unit
+    onUpdateEntry: (String, EntryOperation, Int?) -> Unit
 ) {
     val spinningWheelState by viewModel.spinningWheelState.collectAsStateWithLifecycle()
 
@@ -58,17 +64,20 @@ fun SpinningWheelEntryScreen(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SpinningWheelEntryContent(
     state: SpinningWheelState,
     wheelItems: List<String>,
     onEntryTextChanged: (String) -> Unit,
     onDone: () -> Unit,
-    onUpdateEntry: (String, EntryOperation) -> Unit
+    onUpdateEntry: (String, EntryOperation, Int?) -> Unit
 ) {
+
     Column(
-        modifier = Modifier
-            .padding(SPACE_16), horizontalAlignment = Alignment.Start
+        Modifier
+            .padding(SPACE_16)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = stringResource(R.string.add_your_entries),
@@ -77,33 +86,33 @@ fun SpinningWheelEntryContent(
 
         VerticalSpacer()
 
-        LazyColumn {
-            items(items = wheelItems) {
-                SpinningWheelEntry(
-                    entry = it,
-                    entryOperation = EntryOperation.REMOVE,
-                    onActionClick = onUpdateEntry
-                )
-            }
-            item {
-                SpinningWheelEntry(
-                    entry = state.newEntry,
-                    onActionClick = { text, entryOp ->
-                        onUpdateEntry(text, entryOp)
-                    },
-                    onTextChange = onEntryTextChanged,
-                    onDone = onDone,
-                    icon = Icons.Default.AddCircle,
-                    entryOperation = EntryOperation.ADD,
-                    iconTint = PositiveGreen
-                )
-            }
+        wheelItems.forEachIndexed { index, item ->
+            SpinningWheelEntry(
+                entry = item,
+                entryOperation = EntryOperation.REMOVE,
+                onActionClick = { text, entryOp ->
+                    onUpdateEntry(text, entryOp, index)
+                }
+            )
         }
+
+        SpinningWheelEntry(
+            entry = state.newEntry,
+            onActionClick = { text, entryOp ->
+                onUpdateEntry(text, entryOp, null)
+            },
+            onTextChange = onEntryTextChanged,
+            onDone = onDone,
+            icon = Icons.Default.AddCircle,
+            entryOperation = EntryOperation.ADD,
+            iconTint = PositiveGreen
+        )
     }
 }
 
 @Composable
 fun SpinningWheelEntry(
+    modifier: Modifier = Modifier,
     entry: String? = null,
     icon: ImageVector = Icons.Default.DoNotDisturbOn,
     iconTint: Color = NegativeRed,
@@ -113,7 +122,7 @@ fun SpinningWheelEntry(
     onActionClick: (String, EntryOperation) -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = SPACE_8),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -164,7 +173,7 @@ fun SpinningWheelEntryScreenPreview() {
     SpinningWheelEntryContent(
         wheelItems = listOf("test", "test 2", "test 3"),
         state = SpinningWheelState(),
-        onUpdateEntry = { _, _ -> },
+        onUpdateEntry = { _, _, _ -> },
         onEntryTextChanged = {},
         onDone = {}
     )

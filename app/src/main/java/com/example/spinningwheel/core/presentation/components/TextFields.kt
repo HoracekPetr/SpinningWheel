@@ -21,18 +21,19 @@ import com.example.spinningwheel.R
 
 @Composable
 fun TransparentTextField(
+    modifier: Modifier = Modifier,
     text: String,
     onTextChanged: (String) -> Unit,
     onDone: () -> Unit,
     placeholderText: String = stringResource(id = R.string.title_placeholder)
 ) {
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         textStyle = transparentTextFieldStyle(),
         value = text,
         placeholder = {
             Text(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 text = placeholderText, style = transparentTextFieldStyle()
             )
         },

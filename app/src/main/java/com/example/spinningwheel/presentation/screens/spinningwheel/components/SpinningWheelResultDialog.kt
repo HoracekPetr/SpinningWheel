@@ -11,7 +11,8 @@ import com.example.spinningwheel.R
 fun SpinningWheelResultDialog(
     title: String,
     result: String?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onRemove: (String?) -> Unit = {}
 ) {
     val resultTitle = if (title.isNotEmpty()) "$title: ${result.orEmpty()}" else
         stringResource(
@@ -22,9 +23,14 @@ fun SpinningWheelResultDialog(
     AlertDialog(
         title = { Text(text = resultTitle) },
         onDismissRequest = onDismiss,
-        confirmButton = {
+        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(text = stringResource(R.string.dialog_result_ok))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onRemove(result) }) {
+                Text(text = stringResource(R.string.dialog_result_remove))
             }
         }
     )

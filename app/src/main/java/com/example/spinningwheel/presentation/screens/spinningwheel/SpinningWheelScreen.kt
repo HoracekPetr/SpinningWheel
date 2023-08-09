@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,8 +67,8 @@ fun SpinningWheelScreen(
             SpinningWheelEntryScreen(
                 viewModel = viewModel,
                 wheelItems = spinningWheelState.items,
-                onUpdateEntry = { entry, operation ->
-                    viewModel.onEvent(SpinningWheelEvent.UpdateItems(entry, operation))
+                onUpdateEntry = { entry, operation, index ->
+                    viewModel.onEvent(SpinningWheelEvent.UpdateItems(entry, operation, index))
                 },
                 onEntryTextChanged = {
                     viewModel.onEvent(SpinningWheelEvent.EnteredEntryText(it))
@@ -88,6 +89,12 @@ fun SpinningWheelScreen(
                 onWheelClick = { viewModel.onEvent(SpinningWheelEvent.ClickedWheel) },
                 onSpinningFinish = { viewModel.onEvent(SpinningWheelEvent.OnSpinningFinish(it)) },
                 onDismiss = { viewModel.onEvent(SpinningWheelEvent.DismissDialog) },
+                onTitleFocusLost = {
+                    viewModel.onEvent(SpinningWheelEvent.TitleFocusLost)
+                },
+                onRemove = {
+                    viewModel.onEvent(SpinningWheelEvent.RemoveItem(it))
+                },
                 onChangedTitle = {
                     viewModel.onEvent(SpinningWheelEvent.EnteredTitle(it))
                 }
@@ -105,6 +112,8 @@ fun SpinningWheelScreenContent(
     onWheelClick: () -> Unit,
     onSpinningFinish: (String?) -> Unit,
     onDismiss: () -> Unit,
+    onTitleFocusLost: () -> Unit,
+    onRemove: (String?) -> Unit,
     onChangedTitle: (String) -> Unit
 ) {
     Box(
@@ -137,6 +146,11 @@ fun SpinningWheelScreenContent(
             VerticalSpacer(space = SPACE_32)
 
             TransparentTextField(
+                modifier = Modifier.onFocusChanged {
+                    if (!it.isFocused) {
+                        onTitleFocusLost()
+                    }
+                },
                 text = state.wheelTitle,
                 onTextChanged = onChangedTitle,
                 onDone = {
@@ -148,7 +162,8 @@ fun SpinningWheelScreenContent(
                 SpinningWheelResultDialog(
                     title = state.wheelTitle,
                     result = state.result,
-                    onDismiss = onDismiss
+                    onDismiss = onDismiss,
+                    onRemove = onRemove
                 )
             }
         }
@@ -180,6 +195,8 @@ fun SpinningWheelScreenPreview() {
         onSpinningFinish = {},
         onDismiss = {},
         onChangedTitle = {},
+        onTitleFocusLost = {},
+        onRemove = {},
         focusManager = null
     )
 }

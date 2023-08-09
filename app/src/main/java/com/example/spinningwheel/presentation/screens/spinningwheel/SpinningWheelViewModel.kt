@@ -41,7 +41,8 @@ class SpinningWheelViewModel : ViewModel() {
             is SpinningWheelEvent.UpdateItems -> {
                 updateSpinningWheelList(
                     entry = event.entry,
-                    entryOperation = event.operation
+                    entryOperation = event.operation,
+                    index = event.index
                 )
             }
 
@@ -72,32 +73,75 @@ class SpinningWheelViewModel : ViewModel() {
             is SpinningWheelEvent.EnteredTitle -> {
                 _spinningWheelState.updateState {
                     copy(
-                        wheelTitle = event.title.trim()
+                        wheelTitle = event.title
+                    )
+                }
+            }
+            is SpinningWheelEvent.TitleFocusLost -> {
+                _spinningWheelState.updateState {
+                    copy(
+                        wheelTitle = _spinningWheelState.value.wheelTitle.trim()
+                    )
+                }
+            }
+
+            is SpinningWheelEvent.RemoveItem -> {
+                removeResultItem(event.result)
+
+                _spinningWheelState.updateState {
+                    copy(
+                        result = null,
+                        isResultDialogShown = false
                     )
                 }
             }
         }
     }
 
-    private fun updateSpinningWheelList(entry: String, entryOperation: EntryOperation) {
+    private fun updateSpinningWheelList(
+        entry: String,
+        entryOperation: EntryOperation,
+        index: Int?
+    ) {
         val items = _spinningWheelState.value.items
 
         val newList = buildList {
             val oldList = when (entryOperation) {
                 EntryOperation.ADD -> items + entry
-                EntryOperation.REMOVE -> items.find { it == entry }?.let {
-                    items - it
-                } ?: items
+                EntryOperation.REMOVE -> {
+                    val mutableItems = items.toMutableList()
+                    index?.let {
+                        mutableItems.removeAt(index)
+                    }
+                    mutableItems.toList()
+                }
             }
             this.addAll(oldList)
         }
 
-        if(entryOperation == EntryOperation.ADD){
+        if (entryOperation == EntryOperation.ADD) {
             _spinningWheelState.updateState {
                 copy(
                     newEntry = null
                 )
             }
+        }
+
+        _spinningWheelState.updateState {
+            copy(
+                items = newList
+            )
+        }
+    }
+
+    private fun removeResultItem(result: String?){
+        val items = _spinningWheelState.value.items
+
+        val newList = buildList {
+            val oldList = items.find { it == result }?.let {
+                items - it
+            } ?: items
+            this.addAll(oldList)
         }
 
         _spinningWheelState.updateState {

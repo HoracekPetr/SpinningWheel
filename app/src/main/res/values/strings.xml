@@ -9,4 +9,5 @@
     <string name="settings_scheme">Select color scheme</string>
     <string name="show_entries">Show entries</string>
     <string name="title_placeholder">Add a title...</string>
+    <string name="dialog_result_remove">Remove</string>
 </resources>

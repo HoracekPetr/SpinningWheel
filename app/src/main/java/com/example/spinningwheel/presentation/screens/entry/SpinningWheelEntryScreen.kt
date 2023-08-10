@@ -1,15 +1,10 @@
 package com.example.spinningwheel.presentation.screens.entry
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,7 +20,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +33,6 @@ import com.example.spinningwheel.core.presentation.components.VerticalSpacer
 import com.example.spinningwheel.core.presentation.theme.NegativeRed
 import com.example.spinningwheel.core.presentation.theme.PositiveGreen
 import com.example.spinningwheel.core.presentation.theme.SPACE_16
-import com.example.spinningwheel.core.presentation.theme.SPACE_32
 import com.example.spinningwheel.core.presentation.theme.SPACE_8
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelState
 import com.example.spinningwheel.presentation.screens.spinningwheel.SpinningWheelViewModel
@@ -64,7 +57,6 @@ fun SpinningWheelEntryScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SpinningWheelEntryContent(
     state: SpinningWheelState,
@@ -81,7 +73,8 @@ fun SpinningWheelEntryContent(
     ) {
         Text(
             text = stringResource(R.string.add_your_entries),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.tertiary
         )
 
         VerticalSpacer()

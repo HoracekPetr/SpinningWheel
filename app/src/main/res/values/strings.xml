@@ -10,4 +10,7 @@
     <string name="show_entries">Show entries</string>
     <string name="title_placeholder">Add a title...</string>
     <string name="dialog_result_remove">Remove</string>
+    <string name="saved_wheels_title">Your saved wheels</string>
+    <string name="save_wheel">Save wheel</string>
+    <string name="clear_wheel">Clear wheel</string>
 </resources>

@@ -1,14 +1,12 @@
 package com.example.spinningwheel.presentation.screens.spinningwheel
 
-import com.example.spinningwheel.core.presentation.util.WheelColorScheme
+import com.example.spinningwheel.data.local.model.SpinningWheelData
 
 data class SpinningWheelState(
-    val wheelTitle: String = "",
-    val items: List<String> = listOf(),
-    val wheelFontSize: Float = 16f,
-    val wheelColorScheme: WheelColorScheme = WheelColorScheme.Classic,
+    val data: SpinningWheelData = SpinningWheelData(),
     val newEntry: String? = null,
     val result: String? = null,
+    val isLoading: Boolean = false,
     val isWheelSpinning: Boolean = false,
     val isResultDialogShown: Boolean = false
 )

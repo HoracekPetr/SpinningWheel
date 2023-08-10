@@ -1,12 +1,25 @@
 package com.example.spinningwheel.presentation.screens.spinningwheel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.spinningwheel.core.util.updateState
+import com.example.spinningwheel.data.local.model.SpinningWheelData
+import com.example.spinningwheel.data.repository.WheelRepository
+import com.example.spinningwheel.data.repository.WheelRepositoryImpl
 import com.example.spinningwheel.presentation.screens.spinningwheel.util.EntryOperation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class SpinningWheelViewModel : ViewModel() {
+class SpinningWheelViewModel(
+    private val repository: WheelRepository
+) : ViewModel() {
+
+    private val _savedWheels = MutableStateFlow<List<SpinningWheelData>?>(null)
+    val savedWheels = _savedWheels.asStateFlow()
 
     private val _spinningWheelState = MutableStateFlow(SpinningWheelState())
     val spinningWheelState = _spinningWheelState.asStateFlow()
@@ -57,7 +70,9 @@ class SpinningWheelViewModel : ViewModel() {
             is SpinningWheelEvent.ChangedFontSize -> {
                 _spinningWheelState.updateState {
                     copy(
-                        wheelFontSize = event.fontSize
+                        data = _spinningWheelState.value.data.copy(
+                            wheelFontSize = event.fontSize
+                        )
                     )
                 }
             }
@@ -65,7 +80,9 @@ class SpinningWheelViewModel : ViewModel() {
             is SpinningWheelEvent.ChangedColorScheme -> {
                 _spinningWheelState.updateState {
                     copy(
-                        wheelColorScheme = event.colorScheme
+                        data = _spinningWheelState.value.data.copy(
+                            wheelColorScheme = event.colorScheme
+                        )
                     )
                 }
             }
@@ -73,14 +90,19 @@ class SpinningWheelViewModel : ViewModel() {
             is SpinningWheelEvent.EnteredTitle -> {
                 _spinningWheelState.updateState {
                     copy(
-                        wheelTitle = event.title
+                        data = _spinningWheelState.value.data.copy(
+                            wheelTitle = event.title
+                        )
                     )
                 }
             }
+
             is SpinningWheelEvent.TitleFocusLost -> {
                 _spinningWheelState.updateState {
                     copy(
-                        wheelTitle = _spinningWheelState.value.wheelTitle.trim()
+                        data = _spinningWheelState.value.data.copy(
+                            wheelTitle = _spinningWheelState.value.data.wheelTitle.trim()
+                        )
                     )
                 }
             }
@@ -95,6 +117,59 @@ class SpinningWheelViewModel : ViewModel() {
                     )
                 }
             }
+
+            is SpinningWheelEvent.LoadAllWheels -> {
+                viewModelScope.launch {
+                    repository.getAllWheelData().collect { wheelData ->
+                        _savedWheels.update { wheelData }
+                    }
+                }
+            }
+
+            is SpinningWheelEvent.LoadWheel -> {
+                viewModelScope.launch {
+                    val data = repository.getWheelData(event.id)
+
+                    _spinningWheelState.updateState {
+                        copy(
+                            data = data
+                        )
+                    }
+                }
+            }
+
+            is SpinningWheelEvent.SaveWheel -> {
+                viewModelScope.launch {
+
+                    _spinningWheelState.updateState {
+                        copy(
+                            isLoading = true
+                        )
+                    }
+
+                    repository.insertWheelData(event.data)
+
+                    _spinningWheelState.updateState {
+                        copy(
+                            isLoading = false
+                        )
+                    }
+                }
+            }
+
+            is SpinningWheelEvent.DeleteWheel -> {
+                viewModelScope.launch {
+                    repository.deleteWheelData(event.id)
+                }
+            }
+
+            is SpinningWheelEvent.ClearWheel -> {
+                _spinningWheelState.updateState {
+                    copy(
+                        data = SpinningWheelData()
+                    )
+                }
+            }
         }
     }
 
@@ -103,11 +178,12 @@ class SpinningWheelViewModel : ViewModel() {
         entryOperation: EntryOperation,
         index: Int?
     ) {
-        val items = _spinningWheelState.value.items
+        val items = _spinningWheelState.value.data.items
 
         val newList = buildList {
             val oldList = when (entryOperation) {
                 EntryOperation.ADD -> items + entry
+
                 EntryOperation.REMOVE -> {
                     val mutableItems = items.toMutableList()
                     index?.let {
@@ -129,13 +205,15 @@ class SpinningWheelViewModel : ViewModel() {
 
         _spinningWheelState.updateState {
             copy(
-                items = newList
+                data = _spinningWheelState.value.data.copy(
+                    items = newList
+                )
             )
         }
     }
 
-    private fun removeResultItem(result: String?){
-        val items = _spinningWheelState.value.items
+    private fun removeResultItem(result: String?) {
+        val items = _spinningWheelState.value.data.items
 
         val newList = buildList {
             val oldList = items.find { it == result }?.let {
@@ -146,7 +224,9 @@ class SpinningWheelViewModel : ViewModel() {
 
         _spinningWheelState.updateState {
             copy(
-                items = newList
+                data = _spinningWheelState.value.data.copy(
+                    items = newList
+                )
             )
         }
     }

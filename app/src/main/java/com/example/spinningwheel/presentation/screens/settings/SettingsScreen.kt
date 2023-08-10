@@ -52,11 +52,12 @@ fun SettingsScreen(
     ) {
         Text(
             text = stringResource(R.string.settings_title),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.tertiary
         )
         VerticalSpacer(space = SPACE_28)
         FontSizeSettings(
-            fontSize = state.wheelFontSize,
+            fontSize = state.data.wheelFontSize,
             onValueChange = {
                 viewModel.onEvent(
                     SpinningWheelEvent.ChangedFontSize(floor(it))
@@ -65,7 +66,7 @@ fun SettingsScreen(
         )
         VerticalSpacer(space = SPACE_28)
         ColorSchemeSettings(
-            selectedScheme = state.wheelColorScheme,
+            selectedScheme = state.data.wheelColorScheme,
             onSchemeChange = {
                 viewModel.onEvent(
                     SpinningWheelEvent.ChangedColorScheme(it)
